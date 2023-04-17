@@ -118,7 +118,10 @@ See `research--add-buffer-variables' for how this is used."
    (format
     ", revert-buffer-function: %S"
     `(lambda (_ignore-auto _noconfirm) ,command))
-   "-*-\n"))
+   "-*-\n\n")
+  (setq-local revert-buffer-function
+              `(lambda (_ignore-auto _noconfirm)
+                 ,command)))
 
 (defun research--add-buffer-variables (command)
   "Store COMMAND in `research-stdout-buffer' local variables.
