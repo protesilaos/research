@@ -51,6 +51,12 @@
   :group 'shell
   :group 'unix)
 
+(defcustom research-hook nil
+  "Normal hook that runs at the end of `research'."
+  :type 'hook
+  :package-version '(research . "0.1.0")
+  :group 'research)
+
 (defcustom research-buttonize-absolute-file-paths t
   "When non-nil render absolute file paths as buttons.
 Buttonization is done in buffers whose major mode is
@@ -157,6 +163,7 @@ parameters used to produce them.  They can be generated anew
 using those variables."
   (research-make-process arguments)
   (research--add-buffer-variables `(research ',arguments)))
+  (run-hooks 'research-hook))
 
 ;;;; Major mode declaration (buttonize paths)
 
