@@ -135,6 +135,9 @@ BUFFER is either an object that satisfies `bufferp' or a buffer
 name."
   (if-let ((buffer (get-buffer research-stdout-buffer)))
       (with-current-buffer buffer
+        ;; Wait for process to finish before writing anything,
+        ;; otherwise what we insert will appear at the end.
+        (while (accept-process-output (get-buffer-process buffer)))
         (let ((inhibit-read-only t))
           (save-excursion
             (goto-char (point-min))
