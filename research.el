@@ -142,6 +142,18 @@ name."
               (research--insert-revert-buffer-function command)))))
     (error "Cannot find `%s' as a buffer to store parameters" buffer)))
 
+(defun research--clear-buffer (buffer)
+  "Delete the contents of BUFFER."
+  (when-let* ((buf (get-buffer buffer))
+              ((buffer-live-p buf)))
+    (with-current-buffer buf
+      (erase-buffer))))
+
+(defun research--clear-process-buffers ()
+  "Clear `research-stdout-buffer' and `research-stderr-buffer'."
+  (research--clear-buffer research-stdout-buffer)
+  (research--clear-buffer research-stderr-buffer))
+
 (defun research (arguments)
   "Make a subprocess that consists of ARGUMENTS.
 ARGUMENTS is either a string or list of strings that represent a
@@ -161,8 +173,9 @@ the buffer `research-stdout-buffer', while errors go to
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
 using those variables."
+  (research--clear-process-buffers)
   (research-make-process arguments)
-  (research--add-buffer-variables `(research ',arguments)))
+  (research--add-buffer-variables `(research ',arguments))
   (run-hooks 'research-hook))
 
 ;;;; Major mode declaration (buttonize paths)
