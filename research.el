@@ -160,7 +160,8 @@ by `research-buttonize-absolute-file-paths'."
   'face 'button)
 
 (defun research-buttonize-absolute-file-paths ()
-  "Find absolute file paths in the current buffer and buttonize them."
+  "Find absolute file paths in the current buffer and buttonize them.
+Buttons call the `research-find-file-command'."
   (when research-buttonize-absolute-file-paths
     (save-excursion
       (goto-char (point-min))
