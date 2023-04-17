@@ -116,8 +116,8 @@ See `research--add-buffer-variables' for how this is used."
   (insert
    "-*- mode: research-mode"
    (format
-    " , revert-buffer-function: %S"
-    `(lambda (_ignore-auto _noconfirm) (,command)))
+    ", revert-buffer-function: %S"
+    `(lambda (_ignore-auto _noconfirm) ,command))
    "-*-\n"))
 
 (defun research--add-buffer-variables (command)
@@ -153,7 +153,7 @@ Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
 using those variables."
   (research-make-process arguments)
-  (research--add-buffer-variables `(research ,arguments)))
+  (research--add-buffer-variables `(research ',arguments)))
 
 ;;;; Major mode declaration (buttonize paths)
 
