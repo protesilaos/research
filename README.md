@@ -22,4 +22,4 @@ buffers they generate "re-searchable".
     + GitLab: <https://gitlab.com/protesilaos/research>
 + Mailing list: <https://lists.sr.ht/~protesilaos/general-issues>
 + Backronym: Repeat Ephemeral Searches in Emacs via Access to
-  Reproducible Command History.
+  Reproducible Command Hubs.

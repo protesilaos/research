@@ -41,7 +41,7 @@
 ;; commands and the buffers they generate "re-searchable".
 ;;
 ;; Backronym: Repeat Ephemeral Searches in Emacs via Access to
-;; Reproducible Command History.
+;; Reproducible Command Hubs.
 
 ;;; Code:
 
