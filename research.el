@@ -198,8 +198,9 @@ by the function `research-buttonize-absolute-file-paths'."
 
 ;; FIXME 2023-04-17: This is not a reliable regexp, but we just need
 ;; something to get started.
-(defconst research-absolute-file-path-regexp "^.*?\\(/.*/?\\).*?$"
-  "Regular expression to match absolute file paths.")
+(defconst research-absolute-file-path-regexp "[/:.~[:alpha:]]+/\\|@[[:alpha:]][-[:alnum:]]+\\."
+  "Regular expression to match absolute file paths.
+Variant of `ffap-next-regexp'.")
 
 (defun research-buttonize-absolute-file-paths ()
   "Find absolute file paths in the current buffer and buttonize them.
@@ -207,8 +208,11 @@ Buttons call the `research-find-file-command'."
   (when research-buttonize-absolute-file-paths
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward research-absolute-file-path-regexp nil :no-error)
-        (make-button (match-beginning 1) (match-end 1) :type 'research-file-button)))))
+      (while (re-search-forward research-absolute-file-path-regexp nil :no-error 1)
+        (when-let (((thing-at-point 'filename))
+                   ((not (thing-at-point 'url)))
+                   (bounds (bounds-of-thing-at-point 'filename)))
+          (make-button (car bounds) (cdr bounds) :type 'research-file-button))))))
 
 ;; TODO 2023-04-17: Substantiate the major-mode.
 
