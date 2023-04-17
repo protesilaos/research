@@ -133,7 +133,7 @@ name."
               (research--insert-revert-buffer-function command)))))
     (error "Cannot find `%s' as a buffer to store parameters" buffer)))
 
-(defun research (&rest arguments)
+(defun research (arguments)
   "Make a subprocess that consists of ARGUMENTS.
 ARGUMENTS is either a string or list of strings that represent a
 shell invocation.  It may also be a function that returns such
