@@ -72,10 +72,10 @@ Buttonization is done in buffers whose major mode is
 
 ;;;; Core functionality
 
-(defvar research-buffer-stdout "*research*"
+(defvar research-stdout-buffer "*research*"
   "Buffer name for RESEARCH commands showing their stdout.")
 
-(defvar research-buffer-stderr "*research-errors*"
+(defvar research-stderr-buffer "*research-errors*"
   "Buffer name for RESEARCH commands showing their stderr.")
 
 (defconst research-spacing "[\s\f\t\n\r\v]+"
@@ -106,9 +106,9 @@ ARGUMENTS are used to construct the shell invocation.  They are
 passed directly to `research--prepare-shell-invocation'."
   (make-process
    :name "research"
-   :buffer (get-buffer-create research-buffer-stdout)
+   :buffer (get-buffer-create research-stdout-buffer)
    :command (research--prepare-shell-invocation arguments)
-   :stderr (get-buffer-create research-buffer-stderr)))
+   :stderr (get-buffer-create research-stderr-buffer)))
 
 (defmacro research-create-command (name arguments &optional doc)
   "Create command with NAME and DOC that invokes ARGUMENTS.
@@ -128,8 +128,8 @@ macro like this:
      `(\"find\" \".\" \"-type\" \"f\" \"-iname\" ,(read-string \"A test prompt: \")))
 
 The standard output of the eventual shell invocation is stored in
-the buffer `research-buffer-stdout', while errors go to
-`research-buffer-stderr'.
+the buffer `research-stdout-buffer', while errors go to
+`research-stderr-buffer'.
 
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
