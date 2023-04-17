@@ -110,6 +110,29 @@ passed directly to `research--prepare-shell-invocation'."
    :command (research--prepare-shell-invocation arguments)
    :stderr (get-buffer-create research-stderr-buffer)))
 
+(defun research--insert-revert-buffer-function (command)
+  "Insert `revert-buffer-function' for COMMAND.
+See `research--add-buffer-variables' for how this is used."
+  (insert
+   "-*- mode: research-mode"
+   (format
+    " , revert-buffer-function: %S"
+    `(lambda (_ignore-auto _noconfirm) (,command)))
+   "-*-\n"))
+
+(defun research--add-buffer-variables (command buffer)
+  "Store COMMAND in BUFFER local variables.
+BUFFER is either an object that satisfies `bufferp' or a buffer
+name."
+  (if-let ((buffer (get-buffer buffer)))
+      (with-current-buffer buffer
+        (let ((inhibit-read-only t))
+          (save-excursion
+            (goto-char (point-min))
+            (unless (looking-at "-\\*-")
+              (research--insert-revert-buffer-function command)))))
+    (error "Cannot find `%s' as a buffer to store parameters" buffer)))
+
 (defmacro research-create-command (name arguments &optional doc)
   "Create command with NAME and DOC that invokes ARGUMENTS.
 
