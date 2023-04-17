@@ -159,7 +159,7 @@ using those variables.  WORK-IN-PROGRESS: this is not done yet."
 (defun research-find-file (button)
   "Run `research-find-file-command' on BUTTON text.
 BUTTON is assumed to be an absolute file path.  It was buttonized
-by `research-buttonize-absolute-file-paths'."
+by the function `research-buttonize-absolute-file-paths'."
   (funcall
    research-find-file-command
    (buffer-substring (button-start button) (button-end button))))
