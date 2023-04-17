@@ -78,11 +78,6 @@ Buttonization is done in buffers whose major mode is
 (defvar research-buffer-stderr "*research-errors*"
   "Buffer name for RESEARCH commands showing their stderr.")
 
-;; FIXME 2023-04-17: This is not a reliable regexp, but we just need
-;; something to get started.
-(defconst research-absolute-file-path-regexp "^.*?\\(/.*/?\\).*?$"
-  "Regular expression to match absolute file paths.")
-
 (defconst research-spacing "[\s\f\t\n\r\v]+"
   "Spacing characters that delimit strings.")
 
@@ -158,6 +153,11 @@ by `research-buttonize-absolute-file-paths'."
   'follow-link t
   'action #'research-find-file
   'face 'button)
+
+;; FIXME 2023-04-17: This is not a reliable regexp, but we just need
+;; something to get started.
+(defconst research-absolute-file-path-regexp "^.*?\\(/.*/?\\).*?$"
+  "Regular expression to match absolute file paths.")
 
 (defun research-buttonize-absolute-file-paths ()
   "Find absolute file paths in the current buffer and buttonize them.
