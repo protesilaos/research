@@ -207,9 +207,6 @@ Buttons call the `research-find-file-command'."
       (while (re-search-forward research-absolute-file-path-regexp nil :no-error)
         (make-button (match-beginning 1) (match-end 1) :type 'research-file-button)))))
 
-;; TODO 2023-04-17: Define the procedure of adding variables to the
-;; buffer.
-
 ;; TODO 2023-04-17: Substantiate the major-mode.
 
 ;;;###autoload
