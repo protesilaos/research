@@ -152,7 +152,7 @@ the buffer `research-stdout-buffer', while errors go to
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
 using those variables."
-  (research-make-process ,arguments)
+  (research-make-process arguments)
   (research--add-buffer-variables `(research ,arguments)))
 
 ;;;; Major mode declaration (buttonize paths)
