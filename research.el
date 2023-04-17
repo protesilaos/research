@@ -120,11 +120,11 @@ See `research--add-buffer-variables' for how this is used."
     `(lambda (_ignore-auto _noconfirm) (,command)))
    "-*-\n"))
 
-(defun research--add-buffer-variables (command buffer)
-  "Store COMMAND in BUFFER local variables.
+(defun research--add-buffer-variables (command)
+  "Store COMMAND in `research-stdout-buffer' local variables.
 BUFFER is either an object that satisfies `bufferp' or a buffer
 name."
-  (if-let ((buffer (get-buffer buffer)))
+  (if-let ((buffer (get-buffer research-stdout-buffer)))
       (with-current-buffer buffer
         (let ((inhibit-read-only t))
           (save-excursion
