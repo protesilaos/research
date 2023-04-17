@@ -142,9 +142,8 @@ value.  ARGUMENTS is used by `research-make-process'.
 To make ARGUMENTS contain non-constant parts, use the present
 macro like this:
 
-    (research-create-command
-     test-find
-     `(\"find\" \".\" \"-type\" \"f\" \"-iname\" ,(read-string \"A test prompt: \")))
+    (research
+     `(\"find\" \".\" \"-iname\" ,(read-string \"A test prompt: \")))
 
 The standard output of the eventual shell invocation is stored in
 the buffer `research-stdout-buffer', while errors go to
