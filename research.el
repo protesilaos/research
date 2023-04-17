@@ -133,15 +133,11 @@ name."
               (research--insert-revert-buffer-function command)))))
     (error "Cannot find `%s' as a buffer to store parameters" buffer)))
 
-(defmacro research-create-command (name arguments &optional doc)
-  "Create command with NAME and DOC that invokes ARGUMENTS.
-
-NAME is an interactive function that accepts no arguments.  DOC
-is its documentation string, which is optional.
-
+(defun research (&rest arguments)
+  "Make a subprocess that consists of ARGUMENTS.
 ARGUMENTS is either a string or list of strings that represent a
 shell invocation.  It may also be a function that returns such
-value.  The value is used by `research-make-process'.
+value.  ARGUMENTS is used by `research-make-process'.
 
 To make ARGUMENTS contain non-constant parts, use the present
 macro like this:
@@ -157,10 +153,7 @@ the buffer `research-stdout-buffer', while errors go to
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
 using those variables.  WORK-IN-PROGRESS: this is not done yet."
-  `(defun ,name ()
-     ,doc
-     (interactive)
-     (research-make-process ,arguments)))
+  (research-make-process ,arguments))
 
 ;;;; Major mode declaration (buttonize paths)
 
