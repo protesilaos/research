@@ -28,7 +28,8 @@
 ;;
 ;; WORK-IN-PROGRESS.
 ;;
-;; The goal of `research.el' is to provide a thin wrapper for shell
+;; The goal of `research.el' ("re-search" is a shorthand for
+;; "repeatable search") is to provide a thin wrapper for shell
 ;; invocations that search for file names or file contents.  The
 ;; output is stored in an Emacs buffer which retains the parameters
 ;; that generated it.  This buffer can then repeat the command that

@@ -2,11 +2,12 @@
 
 Run shell searches and store them reproducibly in buffers.  ⚠️ WORK-IN-PROGRESS
 
-The goal of `research.el` is to provide a thin wrapper for shell
-invocations that search for file names or file contents.  The output
-is stored in an Emacs buffer which retains the parameters that
-generated it.  This buffer can then repeat the command that created it
-by means of `revert-buffer` (bound to `g` by default).  File paths are
+The goal of `research.el` ("re-search" is a shorthand for "repeatable
+search") is to provide a thin wrapper for shell invocations that
+search for file names or file contents.  The output is stored in an
+Emacs buffer which retains the parameters that generated it.  This
+buffer can then repeat the command that created it by means of
+`revert-buffer` (bound to `g` by default).  File paths are
 automatically buttonised so that they can be used as links to the file
 they reference.
 
