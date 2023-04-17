@@ -171,9 +171,9 @@ using those variables."
   "Run `research-find-file-command' on BUTTON text.
 BUTTON is assumed to be an absolute file path.  It was buttonized
 by the function `research-buttonize-absolute-file-paths'."
-  (funcall
-   research-find-file-command
-   (buffer-substring (button-start button) (button-end button))))
+  (when-let* ((file (buffer-substring (button-start button) (button-end button)))
+              ((file-exists-p file)))
+    (funcall research-find-file-command file)))
 
 (define-button-type 'research-file-button
   'follow-link t
