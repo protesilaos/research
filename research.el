@@ -34,9 +34,11 @@
 ;; that generated it.  This buffer can then repeat the command that
 ;; created it by means of `revert-buffer' (bound to `g' by default).
 ;; File paths are automatically buttonised so that they can be used as
-;; links to the file they reference.  RESEARCH provides the means to
-;; write the Emacs Lisp that wraps around the desired shell
-;; invocation.
+;; links to the file they reference.
+;;
+;; RESEARCH provides the means to write the Emacs Lisp that wraps
+;; around the desired shell invocation.  We call the resulting
+;; commands and the buffers they generate "re-searchable".
 ;;
 ;; Backronym: Repeat Ephemeral Searches in Emacs via Access to
 ;; Reproducible Command History.
