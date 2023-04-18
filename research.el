@@ -186,7 +186,7 @@ using those variables."
 
 (defun research-find-file (button)
   "Run `research-find-file-command' on BUTTON text.
-BUTTON is assumed to be an absolute file path.  It was buttonized
+BUTTON is assumed to be an absolute file path.  It is buttonized
 by the function `research-buttonize-absolute-file-paths'."
   (when-let* ((file (buffer-substring (button-start button) (button-end button)))
               ((file-exists-p file)))
