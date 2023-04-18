@@ -158,6 +158,7 @@ name."
   (research--clear-buffer research-stdout-buffer)
   (research--clear-buffer research-stderr-buffer))
 
+;;;###autoload
 (defun research (arguments)
   "Make a subprocess that consists of ARGUMENTS.
 ARGUMENTS is either a string or list of strings that represent a
