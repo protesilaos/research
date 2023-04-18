@@ -164,7 +164,7 @@ shell invocation.  It may also be a function that returns such
 value.  ARGUMENTS is used by `research-make-process'.
 
 To make ARGUMENTS contain non-constant parts, use the present
-macro like this:
+function like this:
 
     (research
      `(\"find\" \".\" \"-iname\" ,(read-string \"A test prompt: \")))
