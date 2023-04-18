@@ -181,7 +181,13 @@ using those variables."
   (research--clear-process-buffers)
   (research-make-process arguments)
   (research--add-buffer-variables `(research ',arguments))
+  (research-display-stdout)
   (run-hooks 'research-hook))
+
+(defun research-display-stdout ()
+  "Display the `research-stdout-buffer' if it is available."
+  (when-let ((buf (get-buffer research-stdout-buffer)))
+    (display-buffer buf)))
 
 ;;;; Major mode declaration (buttonize paths)
 
