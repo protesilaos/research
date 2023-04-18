@@ -169,7 +169,7 @@ To make ARGUMENTS contain non-constant parts, use the present
 function like this:
 
     (research
-     `(\"find\" \".\" \"-name\" ,(read-string \"A test prompt: \") \"-ls\"))
+     `(\"find\" ,(expand-file-name default-directory) \"-name\" ,(read-string \"A test prompt: \") \"-ls\"))
 
 The standard output of the eventual shell invocation is stored in
 the buffer `research-stdout-buffer', while errors go to
