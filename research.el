@@ -100,16 +100,17 @@ split it at `research-spacing'."
     (error "ARGUMENTS is neither a list nor a string"))))
 
 (defun research--prepare-shell-invocation (arguments)
-  "Prepare shell invocation that consists of ARGUMENTS.
+  "Prepare ARGUMENTS for use in `make-process'.
 ARGUMENTS is either a string that represents a shell
 invocation (e.g. \"find . type -d\") or a list of strings."
   (let ((args (research--return-arguments-as-list arguments)))
     `(,(car args) ,@(cdr args))))
 
 (defun research-make-process (arguments)
-  "Define a `make-process' that invokes a shell with ARGUMENTS.
-ARGUMENTS are used to construct the shell invocation.  They are
-passed directly to `research--prepare-shell-invocation'."
+  "Define a `make-process' that invokes ARGUMENTS.
+ARGUMENTS are used to construct the subprocess.  They are passed
+directly to `research--prepare-shell-invocation' and then used as
+the :command of `make-process'."
   (make-process
    :name "research"
    :buffer (get-buffer-create research-stdout-buffer)
