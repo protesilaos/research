@@ -121,9 +121,9 @@ the :command of `make-process'."
   "Insert `revert-buffer-function' for COMMAND.
 See `research--add-buffer-variables' for how this is used."
   (insert
-   "-*- mode: research-mode"
+   "-*- mode: research"
    (format
-    ", revert-buffer-function: %S"
+    "; revert-buffer-function: %S "
     `(lambda (_ignore-auto _noconfirm) ,command))
    "-*-\n\n")
   (setq-local revert-buffer-function
