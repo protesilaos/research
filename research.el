@@ -126,6 +126,12 @@ the :command of `make-process'."
    :buffer (get-buffer-create research-stdout-buffer)
    :command (research--prepare-shell-invocation arguments)
    :stderr (get-buffer-create research-stderr-buffer)))
+(defun research--insert-timestamp ()
+  "Insert timestamp using `research-timestamp-format'."
+  (let ((inhibit-read-only t))
+    (insert
+     "\nProcess finished at: "
+     (format-time-string research-timestamp-format (current-time)))))
 
 (defun research--insert-revert-buffer-function (command)
   "Insert `revert-buffer-function' for COMMAND.
