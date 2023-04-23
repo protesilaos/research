@@ -164,8 +164,7 @@ See `research--add-buffer-variables' for how this is used."
    "-*-\n\n")
   (setq-local revert-buffer-function
               `(lambda (_ignore-auto _noconfirm)
-                 (let ((inhibit-read-only t))
-                   ,command))))
+                 ,command)))
 
 (defun research--add-buffer-variables (command)
   "Store COMMAND in `research-stdout-buffer' local variables.
