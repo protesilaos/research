@@ -76,6 +76,16 @@ Buttonization is done in buffers whose major mode is
   :package-version '(research . "0.1.0")
   :group 'research)
 
+(defcustom research-timestamp-format "%F %T %z"
+  "Format of timestamp appended to Research buffers.
+The timestamp references the return value of `current-time' at
+the moment the process was concluded.
+
+The format must be a set of specifiers as defined in the
+documentation of `format-time-string'."
+  :type 'string
+  :group 'research)
+
 ;;;; Core functionality
 
 (defvar research-stdout-buffer "*research*"
