@@ -129,7 +129,10 @@ the :command of `make-process'."
                    (when (buffer-live-p stdout-buffer)
                      (with-current-buffer stdout-buffer
                        (goto-char (point-max))
-                       (research--insert-timestamp)
+                       (let ((time (research--format-time)))
+                         (research--insert-timestamp time)
+                         (research--display-stdout)
+                         (research--rename-buffer time))
                        ;; TODO 2023-04-23: Consider adding a
                        ;; `run-hook-with-args' which the user can set
                        ;; up to, for example, receive a notification
@@ -137,12 +140,13 @@ the :command of `make-process'."
                        ;; process output.
                        (research-mode))))))))
 
-(defun research--insert-timestamp ()
-  "Insert timestamp using `research-timestamp-format'."
-  (let ((inhibit-read-only t))
-    (insert
-     "\nProcess finished at: "
-     (format-time-string research-timestamp-format (current-time)))))
+(defun research--format-time ()
+  "Format TIME using `research-timestamp-format'."
+  (format-time-string research-timestamp-format (current-time)))
+
+(defun research--insert-timestamp (time)
+  "Insert TIME using `research-timestamp-format'."
+  (insert "\nProcess finished at: " time))
 
 (defun research--insert-revert-buffer-function (command)
   "Insert `revert-buffer-function' for COMMAND.
