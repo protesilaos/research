@@ -180,6 +180,14 @@ name."
     (with-current-buffer buf
       (erase-buffer))))
 
+(defun research--rename-buffer (time)
+  "Rename `research-stdout-buffer' uniquely with TIME suffix."
+  (when-let* ((buf (get-buffer research-stdout-buffer))
+              ((buffer-live-p buf)))
+    (with-current-buffer buf
+      (rename-buffer
+       (format "%s %s" research-stdout-buffer time)
+       :unique))))
 
 ;;;###autoload
 (defun research (arguments)
