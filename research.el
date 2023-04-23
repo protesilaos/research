@@ -227,6 +227,7 @@ Buttons call the `research-find-file-command'."
 ;;;###autoload
 (define-derived-mode research-mode special-mode "RESEARCH"
   "Major mode for RESEARCH buffers."
+  (setq-local buffer-read-only t)
   (research-buttonize-absolute-file-paths))
 
 (provide 'research)
