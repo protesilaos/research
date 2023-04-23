@@ -57,7 +57,9 @@
   :package-version '(research . "0.1.0")
   :group 'research)
 
-(defcustom research-buttonize-absolute-file-paths t
+;; TODO 2023-04-24: Mention here the command that buttonizes on
+;; demand.  See tasks close to the `research-mode'.
+(defcustom research-buttonize-absolute-file-paths nil
   "When non-nil render absolute file paths as buttons.
 Buttonization is done in buffers whose major mode is
 `research-mode'."
@@ -119,11 +121,13 @@ ARGUMENTS are used to construct the subprocess.  They are passed
 directly to `research--prepare-shell-invocation' and then used as
 the :command of `make-process'."
   (let ((stdout-buffer (get-buffer-create research-stdout-buffer)))
+    ;; FIXME 2023-04-23: Make it asynchronous.
     (make-process
      :name "research"
      :buffer stdout-buffer
      :command (research--prepare-shell-invocation arguments)
      ;; FIXME 2023-04-23: Make the sentinel its own function.
+     ;; TODO 2023-04-23: Keep record of start time.
      :sentinel (lambda (process _)
                  (unless (process-live-p process)
                    (when (buffer-live-p stdout-buffer)
@@ -256,7 +260,9 @@ Buttons call the `research-find-file-command'."
                    (bounds (bounds-of-thing-at-point 'filename)))
           (make-button (car bounds) (cdr bounds) :type 'research-file-button))))))
 
-;; TODO 2023-04-17: Substantiate the major-mode.
+;; TODO 2023-04-23: Bind a key to buttonize the buffer
+;; TODO 2023-04-23: Buttonize region if active (whole buffer by default)
+;; TODO 2023-04-23: Collect files and export to Dired (whole buffer or region)
 
 ;;;###autoload
 (define-derived-mode research-mode special-mode "RESEARCH"
