@@ -91,9 +91,6 @@ documentation of `format-time-string'."
 (defvar research-stdout-buffer "*research*"
   "Buffer name for RESEARCH commands showing their stdout.")
 
-(defvar research-stderr-buffer "*research-errors*"
-  "Buffer name for RESEARCH commands showing their stderr.")
-
 (defconst research-spacing "[\s\f\t\n\r\v]+"
   "Spacing characters that delimit strings.")
 
@@ -121,20 +118,14 @@ invocation (e.g. \"find . type -d\") or a list of strings."
 ARGUMENTS are used to construct the subprocess.  They are passed
 directly to `research--prepare-shell-invocation' and then used as
 the :command of `make-process'."
-  (let ((stdout-buffer (get-buffer-create research-stdout-buffer))
-        (stderr-buffer (get-buffer-create research-stderr-buffer)))
+  (let ((stdout-buffer (get-buffer-create research-stdout-buffer)))
     (make-process
      :name "research"
      :buffer stdout-buffer
      :command (research--prepare-shell-invocation arguments)
-     :stderr stderr-buffer
      ;; FIXME 2023-04-23: Make the sentinel its own function.
      :sentinel (lambda (process _)
                  (unless (process-live-p process)
-                   (when (buffer-live-p stderr-buffer)
-                     (when (get-buffer-process stderr-buffer)
-                       (delete-process (get-buffer-process stderr-buffer)))
-                     (kill-buffer stderr-buffer))
                    (when (buffer-live-p stdout-buffer)
                      (with-current-buffer stdout-buffer
                        (goto-char (point-max))
@@ -182,17 +173,13 @@ name."
               (research--insert-revert-buffer-function command)))))
     (error "Cannot find `%s' as a buffer to store parameters" buffer)))
 
-(defun research--clear-buffer (buffer)
+(defun research--clear-buffer ()
   "Delete the contents of BUFFER."
-  (when-let* ((buf (get-buffer buffer))
+  (when-let* ((buf (get-buffer research-stdout-buffer))
               ((buffer-live-p buf)))
     (with-current-buffer buf
       (erase-buffer))))
 
-(defun research--clear-process-buffers ()
-  "Clear `research-stdout-buffer' and `research-stderr-buffer'."
-  (research--clear-buffer research-stdout-buffer)
-  (research--clear-buffer research-stderr-buffer))
 
 ;;;###autoload
 (defun research (arguments)
@@ -214,7 +201,7 @@ the buffer `research-stdout-buffer', while errors go to
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
 using those variables."
-  (research--clear-process-buffers)
+  (research--clear-buffer)
   (research-make-process arguments)
   (research--add-buffer-variables `(research ',arguments))
   (research-display-stdout)
