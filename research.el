@@ -115,11 +115,15 @@ invocation (e.g. \"find . type -d\") or a list of strings."
   (let ((args (research--return-arguments-as-list arguments)))
     `(,(car args) ,@(cdr args))))
 
-(defun research-make-process (arguments)
+(defun research-make-process (arguments &optional buffer-name)
   "Define a `make-process' that invokes ARGUMENTS.
 ARGUMENTS are used to construct the subprocess.  They are passed
 directly to `research--prepare-shell-invocation' and then used as
-the :command of `make-process'."
+the :command of `make-process'.
+
+With optional BUFFER-NAME, use it as a component for the
+`research-stdout-buffer' once it collects the output and is
+subsequently renamed to include BUFFER-NAME and a timestamp."
   (let ((stdout-buffer (get-buffer-create research-stdout-buffer)))
     ;; FIXME 2023-04-23: Make it asynchronous.
     (make-process
@@ -136,7 +140,7 @@ the :command of `make-process'."
                        (let ((time (research--format-time)))
                          (research--insert-timestamp time)
                          (research--display-stdout)
-                         (research--rename-buffer time))
+                         (research--rename-buffer time buffer-name))
                        ;; TODO 2023-04-23: Consider adding a
                        ;; `run-hook-with-args' which the user can set
                        ;; up to, for example, receive a notification
@@ -188,17 +192,19 @@ name."
     (with-current-buffer buf
       (erase-buffer))))
 
-(defun research--rename-buffer (time)
-  "Rename `research-stdout-buffer' uniquely with TIME suffix."
+(defun research--rename-buffer (time &optional buffer-name)
+  "Rename `research-stdout-buffer' uniquely with TIME suffix.
+Optional BUFFER-NAME has the meaning describe in the
+documentation string of `research-make-process'."
   (when-let* ((buf (get-buffer research-stdout-buffer))
               ((buffer-live-p buf)))
     (with-current-buffer buf
       (rename-buffer
-       (format "%s %s" research-stdout-buffer time)
+       (format "%s %s %s" research-stdout-buffer (or buffer-name "") time)
        :unique))))
 
 ;;;###autoload
-(defun research (arguments)
+(defun research (arguments &optional buffer-name)
   "Make a subprocess that consists of ARGUMENTS.
 ARGUMENTS is either a string or list of strings that represent a
 shell invocation.  It may also be a function that returns such
@@ -211,14 +217,16 @@ function like this:
      `(\"find\" ,(expand-file-name default-directory) \"-name\" ,(read-string \"A test prompt: \") \"-ls\"))
 
 The standard output of the eventual shell invocation is stored in
-the buffer `research-stdout-buffer', while errors go to
-`research-stderr-buffer'.
+the buffer `research-stdout-buffer'.
 
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
-using those variables."
+using those variables.
+
+Optional BUFFER-NAME is a string that is used as part of the
+buffer that contains the standard output of the aforementioned."
   (research--clear-buffer)
-  (research-make-process arguments)
+  (research-make-process arguments buffer-name)
   (research--add-buffer-variables `(research ',arguments))
   (run-hooks 'research-hook))
 
