@@ -121,11 +121,31 @@ invocation (e.g. \"find . type -d\") or a list of strings."
 ARGUMENTS are used to construct the subprocess.  They are passed
 directly to `research--prepare-shell-invocation' and then used as
 the :command of `make-process'."
-  (make-process
-   :name "research"
-   :buffer (get-buffer-create research-stdout-buffer)
-   :command (research--prepare-shell-invocation arguments)
-   :stderr (get-buffer-create research-stderr-buffer)))
+  (let ((stdout-buffer (get-buffer-create research-stdout-buffer))
+        (stderr-buffer (get-buffer-create research-stderr-buffer)))
+    (make-process
+     :name "research"
+     :buffer stdout-buffer
+     :command (research--prepare-shell-invocation arguments)
+     :stderr stderr-buffer
+     ;; FIXME 2023-04-23: Make the sentinel its own function.
+     :sentinel (lambda (process _)
+                 (unless (process-live-p process)
+                   (when (buffer-live-p stderr-buffer)
+                     (when (get-buffer-process stderr-buffer)
+                       (delete-process (get-buffer-process stderr-buffer)))
+                     (kill-buffer stderr-buffer))
+                   (when (buffer-live-p stdout-buffer)
+                     (with-current-buffer stdout-buffer
+                       (goto-char (point-max))
+                       (research--insert-timestamp)
+                       ;; TODO 2023-04-23: Consider adding a
+                       ;; `run-hook-with-args' which the user can set
+                       ;; up to, for example, receive a notification
+                       ;; that the current buffer no longer receives
+                       ;; process output.
+                       (research-mode))))))))
+
 (defun research--insert-timestamp ()
   "Insert timestamp using `research-timestamp-format'."
   (let ((inhibit-read-only t))
