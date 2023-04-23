@@ -88,7 +88,7 @@ documentation of `format-time-string'."
 
 ;;;; Core functionality
 
-(defvar research-stdout-buffer "*research*"
+(defvar research-stdout-buffer "*research-stdout*"
   "Buffer name for RESEARCH commands showing their stdout.")
 
 (defconst research-spacing "[\s\f\t\n\r\v]+"
