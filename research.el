@@ -204,10 +204,9 @@ using those variables."
   (research--clear-buffer)
   (research-make-process arguments)
   (research--add-buffer-variables `(research ',arguments))
-  (research-display-stdout)
   (run-hooks 'research-hook))
 
-(defun research-display-stdout ()
+(defun research--display-stdout ()
   "Display the `research-stdout-buffer' if it is available."
   (when-let ((buf (get-buffer research-stdout-buffer)))
     (display-buffer buf)))
