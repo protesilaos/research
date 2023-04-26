@@ -213,8 +213,13 @@ value.  ARGUMENTS is used by `research-make-process'.
 To make ARGUMENTS contain non-constant parts, use the present
 function like this:
 
-    (research
-     `(\"find\" ,(expand-file-name default-directory) \"-name\" ,(read-string \"A test prompt: \") \"-ls\"))
+    (let* ((dir (expand-file-name \"~/Git/emacs-sources/emacs.git/\"))
+           (default-directory dir))
+      (research
+       `(\"find\" ,dir \"-iregex\" ,(read-string \"Prompt: \") \"-ls\")))
+
+In the above example, the can provide at the prompt an
+Emacs-style regular expression like: .*\.\(el\|c\)
 
 The standard output of the eventual shell invocation is stored in
 the buffer `research-stdout-buffer'.
