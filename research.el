@@ -279,6 +279,13 @@ Buttons call the `research-find-file-command'."
           (make-button (car bounds) (cdr bounds) :type 'research-file-button))))))
 
 ;; TODO 2023-04-23: Bind a key to buttonize the buffer
+(defun research-buttonize-paths ()
+  "Buttonize full paths, subject to confirmation."
+  (declare (interactive-only t))
+  (interactive)
+  (when (yes-or-no-p "Buttonize full paths (may be slow)?")
+    (research-buttonize-absolute-file-paths :force)))
+
 ;; TODO 2023-04-23: Buttonize region if active (whole buffer by default)
 ;; TODO 2023-04-23: Collect files and export to Dired (whole buffer or region)
 
