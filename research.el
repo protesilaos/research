@@ -278,7 +278,6 @@ Buttons call the `research-find-file-command'."
                    (bounds (bounds-of-thing-at-point 'filename)))
           (make-button (car bounds) (cdr bounds) :type 'research-file-button))))))
 
-;; TODO 2023-04-23: Bind a key to buttonize the buffer
 (defun research-buttonize-paths ()
   "Buttonize full paths, subject to confirmation."
   (declare (interactive-only t))
@@ -308,9 +307,17 @@ Buttons call the `research-find-file-command'."
 ;; TODO 2023-04-23: Buttonize region if active (whole buffer by default)
 ;; TODO 2023-04-23: Collect files and export to Dired (whole buffer or region)
 
+(defvar research-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "B") #'research-buttonize-paths)
+    (define-key map (kbd "D") #'research-dired-collect-paths)
+    map)
+  "Keymap for `research-mode'.")
+
 ;;;###autoload
 (define-derived-mode research-mode special-mode "RESEARCH"
   "Major mode for RESEARCH buffers."
+  :keymap research-mode-map
   (setq-local buffer-read-only t)
   (research-buttonize-absolute-file-paths))
 
