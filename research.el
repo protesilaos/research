@@ -286,6 +286,25 @@ Buttons call the `research-find-file-command'."
   (when (yes-or-no-p "Buttonize full paths (may be slow)?")
     (research-buttonize-absolute-file-paths :force)))
 
+(defun research-dired-collect-absolute-file-paths ()
+  "Collect absolute paths and show them in `dired'."
+  (let (paths)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward research-absolute-file-path-regexp nil :no-error 1)
+        (when-let (((thing-at-point 'filename))
+                   ((not (thing-at-point 'url)))
+                   (bounds (bounds-of-thing-at-point 'filename)))
+          (push (buffer-substring-no-properties (car bounds) (cdr bounds)) paths)))
+      (dired (cons "*research paths*" (delete-dups paths))))))
+
+(defun research-dired-collect-paths ()
+  "Collect absolute paths and show them in `dired', subject to confirmation."
+  (declare (interactive-only t))
+  (interactive)
+  (when (yes-or-no-p "Collect full paths with `dired' (may be slow)?")
+    (research-dired-collect-absolute-file-paths)))
+
 ;; TODO 2023-04-23: Buttonize region if active (whole buffer by default)
 ;; TODO 2023-04-23: Collect files and export to Dired (whole buffer or region)
 
