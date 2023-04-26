@@ -261,10 +261,15 @@ by the function `research-buttonize-absolute-file-paths'."
   "Regular expression to match absolute file paths.
 Variant of `ffap-next-regexp'.")
 
-(defun research-buttonize-absolute-file-paths ()
+(defun research-buttonize-absolute-file-paths (&optional force)
   "Find absolute file paths in the current buffer and buttonize them.
+Buttonization is done only if the user option
+`research-buttonize-absolute-file-paths' is non-nil.  With
+optional non-nil FORCE argument, buttonization is done
+regardless.
+
 Buttons call the `research-find-file-command'."
-  (when research-buttonize-absolute-file-paths
+  (when (or force research-buttonize-absolute-file-paths)
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward research-absolute-file-path-regexp nil :no-error 1)
