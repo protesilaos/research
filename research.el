@@ -124,7 +124,8 @@ the :command of `make-process'.
 With optional BUFFER-NAME, use it as a component for the
 `research-stdout-buffer' once it collects the output and is
 subsequently renamed to include BUFFER-NAME and a timestamp."
-  (let ((stdout-buffer (get-buffer-create research-stdout-buffer)))
+  (let ((stdout-buffer (get-buffer-create research-stdout-buffer))
+        (start-time (research--format-time)))
     ;; FIXME 2023-04-23: Make it asynchronous.
     (make-process
      :name "research"
@@ -137,10 +138,9 @@ subsequently renamed to include BUFFER-NAME and a timestamp."
                    (when (buffer-live-p stdout-buffer)
                      (with-current-buffer stdout-buffer
                        (goto-char (point-max))
-                       (let ((time (research--format-time)))
-                         (research--insert-timestamp time)
-                         (research--display-stdout)
-                         (research--rename-buffer time buffer-name))
+                       (research--insert-timestamp (research--format-time))
+                       (research--display-stdout)
+                       (research--rename-buffer start-time buffer-name)
                        ;; TODO 2023-04-23: Consider adding a
                        ;; `run-hook-with-args' which the user can set
                        ;; up to, for example, receive a notification
