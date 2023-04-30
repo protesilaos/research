@@ -129,6 +129,7 @@ subsequently renamed to include BUFFER-NAME and a timestamp."
     ;; FIXME 2023-04-23: Make it asynchronous.
     (make-process
      :name "research"
+     :connection-type 'pipe
      :buffer stdout-buffer
      :command (research--prepare-shell-invocation arguments)
      ;; FIXME 2023-04-23: Make the sentinel its own function.
