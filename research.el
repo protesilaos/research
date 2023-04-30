@@ -261,51 +261,80 @@ by the function `research-buttonize-absolute-file-paths'."
   "Regular expression to match absolute file paths.
 Variant of `ffap-next-regexp'.")
 
-(defun research-buttonize-absolute-file-paths (&optional force)
+(defun research-buttonize-absolute-file-paths (&optional force beginning end)
   "Find absolute file paths in the current buffer and buttonize them.
 Buttonization is done only if the user option
 `research-buttonize-absolute-file-paths' is non-nil.  With
 optional non-nil FORCE argument, buttonization is done
 regardless.
 
+With optional BEGINNING and END as buffer positions, limit the
+effect to the region delineated therein.  Otherwise operate on
+the entirety of the buffer.
+
 Buttons call the `research-find-file-command'."
   (when (or force research-buttonize-absolute-file-paths)
     (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward research-absolute-file-path-regexp nil :no-error 1)
+      (goto-char (or beginning (point-min)))
+      (while (re-search-forward research-absolute-file-path-regexp end :no-error 1)
         (when-let (((thing-at-point 'filename))
                    ((not (thing-at-point 'url)))
                    (bounds (bounds-of-thing-at-point 'filename)))
           (make-button (car bounds) (cdr bounds) :type 'research-file-button))))))
 
-(defun research-buttonize-paths ()
-  "Buttonize full paths, subject to confirmation."
-  (declare (interactive-only t))
-  (interactive)
-  (when (yes-or-no-p "Buttonize full paths (may be slow)?")
-    (research-buttonize-absolute-file-paths :force)))
+(defun research-buttonize-paths (&optional beginning end)
+  "Buttonize full paths, subject to confirmation.
 
-(defun research-dired-collect-absolute-file-paths ()
-  "Collect absolute paths and show them in `dired'."
+With an active region between BEGINNING and END buffer positions,
+operate within the boundaries of that area.  Else consider the
+entire buffer.
+
+If the entire buffer is the target, prompt for confirmation as
+the extraction process may be slow depending on the size of the
+buffer."
+  (interactive
+   (when (region-active-p)
+     (list
+      (region-beginning)
+      (region-end))))
+  (when (or (and beginning end)
+            (yes-or-no-p "Buttonize full paths (may be slow)?"))
+    (research-buttonize-absolute-file-paths :force beginning end)))
+
+(defun research-dired-collect-absolute-file-paths (&optional beginning end)
+  "Collect absolute paths and show them in `dired'.
+With optional BEGINNING and END as buffer positions, limit the
+effect to the region delineated therein.  Otherwise operate on
+the entirety of the buffer."
   (let (paths)
+    ;; TODO 2023-04-30: Incorporate for `save-restriction'.
     (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward research-absolute-file-path-regexp nil :no-error 1)
+      (goto-char (or beginning (point-min)))
+      (while (re-search-forward research-absolute-file-path-regexp end :no-error 1)
         (when-let (((thing-at-point 'filename))
                    ((not (thing-at-point 'url)))
                    (bounds (bounds-of-thing-at-point 'filename)))
           (push (buffer-substring-no-properties (car bounds) (cdr bounds)) paths)))
       (dired (cons "*research paths*" (delete-dups paths))))))
 
-(defun research-dired-collect-paths ()
-  "Collect absolute paths and show them in `dired', subject to confirmation."
-  (declare (interactive-only t))
-  (interactive)
-  (when (yes-or-no-p "Collect full paths with `dired' (may be slow)?")
-    (research-dired-collect-absolute-file-paths)))
+(defun research-dired-collect-paths (&optional beginning end)
+  "Collect absolute paths and show them in `dired'.
 
-;; TODO 2023-04-23: Buttonize region if active (whole buffer by default)
-;; TODO 2023-04-23: Collect files and export to Dired (whole buffer or region)
+With an active region between BEGINNING and END buffer positions,
+operate within the boundaries of that area.  Else consider the
+entire buffer.
+
+If the entire buffer is the target, prompt for confirmation as
+the extraction process may be slow depending on the size of the
+buffer."
+  (interactive
+   (when (region-active-p)
+     (list
+      (region-beginning)
+      (region-end))))
+  (when (or (and beginning end)
+            (yes-or-no-p "Collect full paths with `dired' (may be slow)?"))
+    (research-dired-collect-absolute-file-paths beginning end)))
 
 (defvar research-mode-map
   (let ((map (make-sparse-keymap)))
