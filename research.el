@@ -88,6 +88,17 @@ documentation of `format-time-string'."
   :type 'string
   :group 'research)
 
+(defcustom research-process-time-identifier "%H%M%S%3N"
+  "Format of time that uniquifies a research process object.
+A research process is named research-TIME where time is the value
+of `format-time-string' with the specifiers provided as the value
+of this variable.
+
+Depending on one's requirements, a high degree of precision is
+mandatory to avoid conflicts between multiple processes."
+  :type 'string
+  :group 'research)
+
 ;;;; Core functionality
 
 (defvar research-stdout-buffer "*research*"
@@ -115,6 +126,10 @@ invocation (e.g. \"find . type -d\") or a list of strings."
   (let ((args (research--return-arguments-as-list arguments)))
     `(,(car args) ,@(cdr args))))
 
+(defun research--make-process-name-unique ()
+  "Return a unique name for `research-make-process'."
+  (concat "research-" (format-time-string research-process-time-identifier)))
+
 (defun research-make-process (arguments &optional buffer-name)
   "Define a `make-process' that invokes ARGUMENTS.
 ARGUMENTS are used to construct the subprocess.  They are passed
@@ -128,7 +143,7 @@ subsequently renamed to include BUFFER-NAME and a timestamp."
         (start-time (research--format-time)))
     ;; FIXME 2023-04-23: Make it asynchronous.
     (make-process
-     :name "research"
+     :name (research--make-process-name-unique)
      :connection-type 'pipe
      :buffer stdout-buffer
      :command (research--prepare-shell-invocation arguments)
