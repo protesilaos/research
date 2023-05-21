@@ -165,11 +165,11 @@ subsequently renamed to include BUFFER-NAME and a timestamp."
 
 (defun research--format-time ()
   "Format TIME using `research-timestamp-format'."
-  (format-time-string research-timestamp-format (current-time)))
+  (format-time-string research-timestamp-format))
 
-(defun research--insert-timestamp (time)
-  "Insert TIME using `research-timestamp-format'."
-  (insert "\nProcess finished at: " time))
+(defun research--insert-timestamp (string time)
+  "Insert STRING describing TIME using `research-timestamp-format'."
+  (insert (format "\nProcess %s at: %s" string time)))
 
 (defun research--insert-revert-buffer-function (command)
   "Insert `revert-buffer-function' for COMMAND.
