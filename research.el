@@ -188,18 +188,11 @@ See `research--add-buffer-variables' for how this is used."
   "Store COMMAND in `research-stdout-buffer' local variables.
 BUFFER is either an object that satisfies `bufferp' or a buffer
 name."
-  (if-let ((buffer (get-buffer research-stdout-buffer)))
-      (with-current-buffer buffer
-        ;; Wait for process to finish before writing anything,
-        ;; otherwise what we insert will appear at the end.
-        (while (accept-process-output (get-buffer-process buffer)))
-        (let ((inhibit-read-only t))
-          (save-excursion
-            (goto-char (point-min))
-            (unless (looking-at "-\\*-")
-              (research--insert-revert-buffer-function command)))))
-    (error "Cannot find `%s' as a buffer to store parameters" buffer)))
-
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-min))
+      (unless (looking-at "-\\*-")
+        (research--insert-revert-buffer-function command)))))
 
 ;;;###autoload
 (defun research (arguments &optional buffer-name)
