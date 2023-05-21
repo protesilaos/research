@@ -248,11 +248,6 @@ buffer that contains the standard output of the aforementioned."
   (research-make-process arguments buffer-name)
   (run-hooks 'research-hook))
 
-(defun research--display-stdout ()
-  "Display the `research-stdout-buffer' if it is available."
-  (when-let ((buf (get-buffer research-stdout-buffer)))
-    (display-buffer buf)))
-
 ;;;; Major mode declaration (buttonize paths)
 
 (defun research-find-file (button)
