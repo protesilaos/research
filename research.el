@@ -245,9 +245,7 @@ using those variables.
 
 Optional BUFFER-NAME is a string that is used as part of the
 buffer that contains the standard output of the aforementioned."
-  (research--clear-buffer)
   (research-make-process arguments buffer-name)
-  (research--add-buffer-variables `(research ',arguments))
   (run-hooks 'research-hook))
 
 (defun research--display-stdout ()
