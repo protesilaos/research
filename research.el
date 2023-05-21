@@ -200,16 +200,6 @@ name."
               (research--insert-revert-buffer-function command)))))
     (error "Cannot find `%s' as a buffer to store parameters" buffer)))
 
-(defun research--rename-buffer (time &optional buffer-name)
-  "Rename `research-stdout-buffer' uniquely with TIME suffix.
-Optional BUFFER-NAME has the meaning describe in the
-documentation string of `research-make-process'."
-  (when-let* ((buf (get-buffer research-stdout-buffer))
-              ((buffer-live-p buf)))
-    (with-current-buffer buf
-      (rename-buffer
-       (format "%s %s %s" research-stdout-buffer (or buffer-name "") time)
-       :unique))))
 
 ;;;###autoload
 (defun research (arguments &optional buffer-name)
