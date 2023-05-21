@@ -150,32 +150,33 @@ ARGUMENTS are used to construct the subprocess.  They are passed
 directly to `research--prepare-shell-invocation' and then used as
 the :command of `make-process'.
 
-With optional BUFFER-NAME, use it as a component for the
-`research-stdout-buffer' once it collects the output and is
-subsequently renamed to include BUFFER-NAME and a timestamp."
-  (let ((stdout-buffer (get-buffer-create research-stdout-buffer))
-        (start-time (research--format-time)))
-    ;; FIXME 2023-04-23: Make it asynchronous.
+With optional BUFFER-NAME, use it as the process standard output
+buffer."
+  (let* ((args (research--prepare-shell-invocation arguments))
+         (stdout-buffer (research--buffer
+                         (or buffer-name (car args))
+                         (research--hash args)))
+         (start-time (research--format-time)))
     (make-process
      :name (research--make-process-name-unique)
      :buffer stdout-buffer
-     :command (research--prepare-shell-invocation arguments)
+     :command args
      ;; FIXME 2023-04-23: Make the sentinel its own function.
-     ;; TODO 2023-04-23: Keep record of start time.
-     :sentinel (lambda (process _)
-                 (unless (process-live-p process)
-                   (when (buffer-live-p stdout-buffer)
-                     (with-current-buffer stdout-buffer
-                       (goto-char (point-max))
-                       (research--insert-timestamp (research--format-time))
-                       (research--display-stdout)
-                       (research--rename-buffer start-time buffer-name)
-                       ;; TODO 2023-04-23: Consider adding a
-                       ;; `run-hook-with-args' which the user can set
-                       ;; up to, for example, receive a notification
-                       ;; that the current buffer no longer receives
-                       ;; process output.
-                       (research-mode))))))))
+     :sentinel
+     (lambda (process _event)
+       (unless (process-live-p process)
+         (when (buffer-live-p stdout-buffer)
+           (with-current-buffer stdout-buffer
+             (let ((inhibit-read-only t))
+               (erase-buffer)
+               (research--add-buffer-variables `(research ',arguments))
+               (goto-char (point-max))
+               (research--insert-timestamp "started" start-time)
+               (research--insert-timestamp "finished" (research--format-time)))
+             ;; TODO 2023-05-21: Make sure the buffer is not hidden,
+             ;; but otherwise display it via a configurable hook.
+             (display-buffer stdout-buffer)
+             (research-mode))))))))
 
 (defun research--format-time ()
   "Format TIME using `research-timestamp-format'."
