@@ -200,13 +200,6 @@ name."
               (research--insert-revert-buffer-function command)))))
     (error "Cannot find `%s' as a buffer to store parameters" buffer)))
 
-(defun research--clear-buffer ()
-  "Delete the contents of BUFFER."
-  (when-let* ((buf (get-buffer research-stdout-buffer))
-              ((buffer-live-p buf)))
-    (with-current-buffer buf
-      (erase-buffer))))
-
 (defun research--rename-buffer (time &optional buffer-name)
   "Rename `research-stdout-buffer' uniquely with TIME suffix.
 Optional BUFFER-NAME has the meaning describe in the
