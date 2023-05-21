@@ -130,6 +130,20 @@ invocation (e.g. \"find . type -d\") or a list of strings."
   "Return a unique name for `research-make-process'."
   (concat "research-" (format-time-string research-process-time-identifier)))
 
+(defun research--convert-list-to-string (list)
+  "Convert LIST to a string.
+Separate each element of LIST by a space."
+  (mapconcat #'identity list " "))
+
+(defun research--hash (list)
+  "Return the concatenated LIST of strings as a hash."
+  (secure-hash 'sha1 (research--convert-list-to-string list)))
+
+(defun research--buffer (name hash)
+  "Get buffer with NAME and HASH for `research-make-process'."
+  (get-buffer-create
+   (format "%s %s %s" research-stdout-buffer name hash)))
+
 (defun research-make-process (arguments &optional buffer-name)
   "Define a `make-process' that invokes ARGUMENTS.
 ARGUMENTS are used to construct the subprocess.  They are passed
