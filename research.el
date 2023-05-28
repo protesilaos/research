@@ -349,5 +349,8 @@ buffer."
   (setq-local buffer-read-only t)
   (research-buttonize-absolute-file-paths))
 
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.research\\'" . research-mode))
+
 (provide 'research)
 ;;; research.el ends here
