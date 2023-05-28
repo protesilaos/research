@@ -46,6 +46,8 @@
 
 ;;; Code:
 
+(require 'ansi-color) ; NOTE 2023-05-28: Experimental
+
 (defgroup research nil
   "Repeat shell searches and store them in buffers."
   :group 'shell
@@ -186,6 +188,21 @@ BUFFER is used to perform the following:
      :name (research--make-process-name-unique)
      :buffer stdout-buffer
      :command args
+     :filter
+     (lambda (process string)
+       (when (buffer-live-p (process-buffer process))
+         (with-current-buffer (process-buffer process)
+           (let ((inhibit-read-only t)
+                 (moving (= (point) (process-mark process))))
+             (save-excursion
+               ;; Insert the text, advancing the process marker.
+               (goto-char (process-mark process))
+               (insert (replace-regexp-in-string "" "\n" string))
+               (ansi-color-apply-on-region (point-min) (point))
+               (set-marker (process-mark process) (point)))
+             (when moving
+               (goto-char (process-mark process)))
+             (ansi-color-apply-on-region (line-beginning-position -1) (point))))))
      :sentinel
      (lambda (process _event)
        (unless (process-live-p process)
