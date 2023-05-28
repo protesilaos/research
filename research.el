@@ -144,6 +144,13 @@ Separate each element of LIST by a space."
   (get-buffer-create
    (format "%s %s %s" research-stdout-buffer name hash)))
 
+(defun research--erase-buffer-contents (buffer)
+  "Erase the contents of BUFFER.
+Do this before the call to `make-process' (per `research-make-process')."
+  (with-current-buffer buffer
+    (let ((inhibit-read-only t))
+      (erase-buffer))))
+
 (defun research-make-process (arguments &optional buffer-name)
   "Define a `make-process' that invokes ARGUMENTS.
 ARGUMENTS are used to construct the subprocess.  They are passed
@@ -157,6 +164,7 @@ buffer."
                          (or buffer-name (car args))
                          (research--hash args)))
          (start-time (research--format-time)))
+    (research--erase-buffer-contents stdout-buffer)
     (make-process
      :name (research--make-process-name-unique)
      :buffer stdout-buffer
@@ -168,7 +176,6 @@ buffer."
          (when (buffer-live-p stdout-buffer)
            (with-current-buffer stdout-buffer
              (let ((inhibit-read-only t))
-               (erase-buffer)
                (research--add-buffer-variables `(research ',arguments))
                (goto-char (point-max))
                (research--insert-timestamp "started" start-time)
