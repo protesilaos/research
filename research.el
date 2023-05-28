@@ -153,12 +153,29 @@ Do this before the call to `make-process' (per `research-make-process')."
 
 (defun research-make-process (arguments &optional buffer-name)
   "Define a `make-process' that invokes ARGUMENTS.
-ARGUMENTS are used to construct the subprocess.  They are passed
-directly to `research--prepare-shell-invocation' and then used as
-the :command of `make-process'.
+
+The process is asynchronous and runs the command consisting of
+ARGUMENTS.  The `car' of ARGUMENTS is the name of the program,
+while the `cdr' are its arguments as a list of strings.
+
+ARGUMENTS are used to construct the shell command, which is a
+subprocess of Emacs.  See `research--prepare-shell-invocation'
+for how ARGUMENTS are prepared.
 
 With optional BUFFER-NAME, use it as the process standard output
-buffer."
+buffer.  BUFFER is an object that satisfies `bufferp', such as
+the return value of `research--buffer'.
+
+BUFFER is used to perform the following:
+
+1. Store the output of the subprocess running ARGUMENTS.
+2. Capture the start and end timestamps of the subprocess.
+3. Define a `revert-buffer' value that makes the subprocess with
+   ARGUMENTS capable of repeating itself.
+4. Store the value of the aforementioned `revert-buffer' in the
+   first line of the buffer (i.e. the mode line), which means
+   that `write-file' will preserve the BUFFER's repeatable
+   subprocess."
   (let* ((args (research--prepare-shell-invocation arguments))
          (stdout-buffer (research--buffer
                          (or buffer-name (car args))
@@ -169,7 +186,6 @@ buffer."
      :name (research--make-process-name-unique)
      :buffer stdout-buffer
      :command args
-     ;; FIXME 2023-04-23: Make the sentinel its own function.
      :sentinel
      (lambda (process _event)
        (unless (process-live-p process)
