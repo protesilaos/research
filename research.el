@@ -53,6 +53,14 @@
   :group 'shell
   :group 'unix)
 
+(defcustom research-directory (expand-file-name "~/Documents/research-buffers")
+  "Default directory for storing research buffers.
+This is the default value read by the command `write-file' when
+it prompts for a file name."
+  :group 'research
+  :package-version '(research . "0.1.0")
+  :type 'directory)
+
 (defcustom research-hook nil
   "Normal hook that runs at the end of `research'."
   :type 'hook
@@ -380,6 +388,17 @@ buffer."
             (yes-or-no-p "Collect full paths with `dired' (may be slow)?"))
     (research-dired-collect-absolute-file-paths beginning end)))
 
+(defun research--make-directory ()
+  "Make the variable `research-directory' and its parents, if needed."
+  (when (and (stringp research-directory)
+             (not (file-directory-p research-directory)))
+    (make-directory research-directory :parents)))
+
+(defun research--directory ()
+  "Normalize variable `research-directory'."
+  (let ((path (or (research--make-directory) research-directory)))
+    (file-name-as-directory (expand-file-name path))))
+
 (defvar research-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "B") #'research-buttonize-paths)
@@ -391,6 +410,7 @@ buffer."
 (define-derived-mode research-mode special-mode "RESEARCH"
   "Major mode for RESEARCH buffers."
   :keymap research-mode-map
+  (setq-local default-directory (research--directory))
   (setq-local buffer-read-only t)
   (research-buttonize-absolute-file-paths))
 
