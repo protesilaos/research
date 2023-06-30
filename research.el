@@ -57,9 +57,36 @@
   "Default directory for storing research buffers.
 This is the default value read by the command `write-file' when
 it prompts for a file name."
-  :group 'research
+  :type 'directory
   :package-version '(research . "0.1.0")
-  :type 'directory)
+  :group 'research)
+
+(defcustom research-buffer-description-function #'research-buffer-description-as-hash
+  "Function to provide a description for research buffers.
+
+Research buffers are named according to this pattern:
+
+    *research: COMMAND DESCRIPTION*
+
+The DESCRIPTION part is affected by this user option.  The rest
+are constant.
+
+The function assigned to this user option must read a list of
+strings and return a single string.  The list of strings
+corresponds to the ARGUMENTS given to the `research' function.
+
+The `research-buffer-description-as-hash' function returns the
+list of strings it receives as a hash.
+
+The `research-buffer-description-as-string' takes the list of
+strings and returns its `cdr' as a single string.  It omits the
+`car' as that is already part of the buffer's name."
+  :package-version '(research . "0.1.0")
+  :type '(choice
+          (function :tag "Show list of arguments as a string" #'research-buffer-description-as-string)
+          (function :tag "Show list of arguments as a hash" #'research-buffer-description-as-hash)
+          (function :tag "Custom description function"))
+  :group 'research)
 
 (defcustom research-hook nil
   "Normal hook that runs at the end of `research'."
@@ -111,13 +138,10 @@ mandatory to avoid conflicts between multiple processes."
 
 ;;;; Core functionality
 
-(defvar research-stdout-buffer "*research*"
-  "Buffer name for RESEARCH commands showing their stdout.")
-
 (defconst research-spacing "[\s\f\t\n\r\v]+"
   "Spacing characters that delimit strings.")
 
-(defun research--return-arguments-as-list (arguments)
+(defun research-return-arguments-as-list (arguments)
   "Return ARGUMENTS as a list of strings.
 If ARGUMENTS is a list, return it as-is.  If it is a string,
 split it at `research-spacing'."
@@ -133,7 +157,7 @@ split it at `research-spacing'."
   "Prepare ARGUMENTS for use in `make-process'.
 ARGUMENTS is either a string that represents a shell
 invocation (e.g. \"find . type -d\") or a list of strings."
-  (let ((args (research--return-arguments-as-list arguments)))
+  (let ((args (research-return-arguments-as-list arguments)))
     `(,(car args) ,@(cdr args))))
 
 (defun research--make-process-name-unique ()
@@ -145,14 +169,43 @@ invocation (e.g. \"find . type -d\") or a list of strings."
 Separate each element of LIST by a space."
   (mapconcat #'identity list " "))
 
-(defun research--hash (list)
-  "Return the concatenated LIST of strings as a hash."
+(defun research-buffer-description-as-string (list)
+  "Return the concatenated LIST of strings.
+
+Omit the `car' of LIST because it is the name of the command
+which already forms part of the buffer's name, per the function
+`research-get-or-create-buffer'.
+
+This function can be used as the value of the user option
+`research-buffer-description-function'."
+  (research--convert-list-to-string (cdr list)))
+
+(defun research-buffer-description-as-hash (list)
+  "Return the concatenated LIST of strings as a hash.
+This function can be used as the value of the user option
+`research-buffer-description-function'."
   (secure-hash 'sha1 (research--convert-list-to-string list)))
 
-(defun research--buffer (name hash)
-  "Get buffer with NAME and HASH for `research-make-process'."
+(defun research--normalize-buffer-description-function ()
+  "Return `research-buffer-description-function' if appropriate.
+Else return `research-buffer-description-as-hash'."
+  (if (and research-buffer-description-function
+           (functionp research-buffer-description-function))
+      research-buffer-description-function
+    #'research-buffer-description-as-hash))
+
+(defun research--buffer-description (list)
+  "Return a description by parsing the LIST of strings.
+This description is used to expand the name of the research
+buffer.  The function must return a string."
+  (funcall (research--normalize-buffer-description-function) list))
+
+(defun research-get-or-create-buffer (name description)
+  "Get buffer with NAME and DESCRIPTION for `research-make-process'.
+DESCRIPTION is ultimately subject to the user option
+`research-buffer-description-function'."
   (get-buffer-create
-   (format "%s %s %s" research-stdout-buffer name hash)))
+   (format "*research: %s %s*" name description)))
 
 (defun research--erase-buffer-contents (buffer)
   "Erase the contents of BUFFER.
@@ -174,7 +227,7 @@ for how ARGUMENTS are prepared.
 
 With optional BUFFER-NAME, use it as the process standard output
 buffer.  BUFFER is an object that satisfies `bufferp', such as
-the return value of `research--buffer'.
+the return value of `research-get-or-create-buffer'.
 
 BUFFER is used to perform the following:
 
@@ -187,9 +240,9 @@ BUFFER is used to perform the following:
    that `write-file' will preserve the BUFFER's repeatable
    subprocess."
   (let* ((args (research--prepare-shell-invocation arguments))
-         (stdout-buffer (research--buffer
+         (stdout-buffer (research-get-or-create-buffer
                          (or buffer-name (car args))
-                         (research--hash args)))
+                         (research--buffer-description args)))
          (start-time (research--format-time)))
     (research--erase-buffer-contents stdout-buffer)
     (make-process
@@ -248,9 +301,7 @@ See `research--add-buffer-variables' for how this is used."
                  ,command)))
 
 (defun research--add-buffer-variables (command)
-  "Store COMMAND in `research-stdout-buffer' local variables.
-BUFFER is either an object that satisfies `bufferp' or a buffer
-name."
+  "Store COMMAND as a local variable."
   (let ((inhibit-read-only t))
     (save-excursion
       (goto-char (point-min))
@@ -263,6 +314,8 @@ name."
 ARGUMENTS is either a string or list of strings that represent a
 shell invocation.  It may also be a function that returns such
 value.  ARGUMENTS is used by `research-make-process'.
+Internally, ARGUMENTS is always converted to a list of strings,
+per `research-return-arguments-as-list'.
 
 Example:
 
@@ -281,7 +334,9 @@ In the above example, the can provide at the prompt an
 Emacs-style regular expression like: .*\.\(el\|c\)
 
 The standard output of the eventual shell invocation is stored in
-the buffer `research-stdout-buffer'.
+a buffer named after research, the name of the shell command (the
+`car' of ARGUMENTS), and whatever the description is per the user
+option `research-buffer-description-function'.
 
 Research buffers store local variables about their state and the
 parameters used to produce them.  They can be generated anew
