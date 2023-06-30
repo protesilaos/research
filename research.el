@@ -256,6 +256,11 @@ ARGUMENTS is either a string or list of strings that represent a
 shell invocation.  It may also be a function that returns such
 value.  ARGUMENTS is used by `research-make-process'.
 
+Example:
+
+    (research
+     '(\"find\" \"/home/prot/Git/emacs.git/\" \"-iregex\" \".*\\.el\" \"-ls\"))
+
 To make ARGUMENTS contain non-constant parts, use the present
 function like this:
 
