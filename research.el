@@ -253,17 +253,13 @@ BUFFER is used to perform the following:
      (lambda (process string)
        (when (buffer-live-p (process-buffer process))
          (with-current-buffer (process-buffer process)
-           (let ((inhibit-read-only t)
-                 (moving (= (point) (process-mark process))))
+           (let ((inhibit-read-only t))
              (save-excursion
                ;; Insert the text, advancing the process marker.
                (goto-char (process-mark process))
                (insert (replace-regexp-in-string "" "\n" string))
                (ansi-color-apply-on-region (point-min) (point))
-               (set-marker (process-mark process) (point)))
-             (when moving
-               (goto-char (process-mark process)))
-             (ansi-color-apply-on-region (line-beginning-position -1) (point))))))
+               (set-marker (process-mark process) (point)))))))
      :sentinel
      (lambda (process _event)
        (unless (process-live-p process)
