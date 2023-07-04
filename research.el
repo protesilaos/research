@@ -245,6 +245,7 @@ BUFFER is used to perform the following:
                          (research--buffer-description args)))
          (start-time (research--format-time)))
     (research--erase-buffer-contents stdout-buffer)
+    (display-buffer stdout-buffer)
     (make-process
      :name (research--make-process-name-unique)
      :buffer stdout-buffer
@@ -274,9 +275,6 @@ BUFFER is used to perform the following:
                (goto-char (point-max))
                (research--insert-timestamp "started" start-time)
                (research--insert-timestamp "finished" (research--format-time)))
-             ;; TODO 2023-05-21: Make sure the buffer is not hidden,
-             ;; but otherwise display it via a configurable hook.
-             (display-buffer stdout-buffer)
              (research-mode))))))))
 
 (defun research--format-time ()
