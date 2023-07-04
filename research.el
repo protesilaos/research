@@ -253,6 +253,9 @@ BUFFER is used to perform the following:
      (lambda (process string)
        (when (buffer-live-p (process-buffer process))
          (with-current-buffer (process-buffer process)
+           (setq mode-line-process
+                 (propertize " Running research..."
+                             'face 'mode-line-emphasis))
            (let ((inhibit-read-only t))
              (save-excursion
                ;; Insert the text, advancing the process marker.
@@ -265,6 +268,7 @@ BUFFER is used to perform the following:
        (unless (process-live-p process)
          (when (buffer-live-p stdout-buffer)
            (with-current-buffer stdout-buffer
+             (setq mode-line-process nil)
              (let ((inhibit-read-only t))
                (research--add-buffer-variables `(research ',arguments))
                (goto-char (point-max))
