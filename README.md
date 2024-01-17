@@ -15,12 +15,10 @@ RESEARCH provides the means to write the Emacs Lisp that wraps around
 the desired shell invocation.  We call the resulting commands and the
 buffers they generate "re-searchable".
 
-+ Package name (GNU ELPA): `research` ⛔ (not available yet)
++ Package name (GNU ELPA): `research` (⛔ not available yet)
 + Official manual: <https://protesilaos.com/emacs/research>
-+ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/research>
-  - Mirrors:
-    + GitHub: <https://github.com/protesilaos/research>
-    + GitLab: <https://gitlab.com/protesilaos/research>
-+ Mailing list: <https://lists.sr.ht/~protesilaos/general-issues>
++ Git repositories:
+  + GitHub: <https://github.com/protesilaos/research>
+  + GitLab: <https://gitlab.com/protesilaos/research>
 + Backronym: Repeat Ephemeral Searches in Emacs via Access to
   Reproducible Command Hubs.
