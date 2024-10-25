@@ -381,9 +381,9 @@ Buttons call the `research-find-file-command'."
     (save-excursion
       (goto-char (or beginning (point-min)))
       (while (re-search-forward research-absolute-file-path-regexp end :no-error 1)
-        (when-let (((thing-at-point 'filename))
-                   ((not (thing-at-point 'url)))
-                   (bounds (bounds-of-thing-at-point 'filename)))
+        (when-let* (((thing-at-point 'filename))
+                    ((not (thing-at-point 'url)))
+                    (bounds (bounds-of-thing-at-point 'filename)))
           (make-button (car bounds) (cdr bounds) :type 'research-file-button))))))
 
 (defun research-buttonize-paths (&optional beginning end)
@@ -415,9 +415,9 @@ the entirety of the buffer."
     (save-excursion
       (goto-char (or beginning (point-min)))
       (while (re-search-forward research-absolute-file-path-regexp end :no-error 1)
-        (when-let (((thing-at-point 'filename))
-                   ((not (thing-at-point 'url)))
-                   (bounds (bounds-of-thing-at-point 'filename)))
+        (when-let* (((thing-at-point 'filename))
+                    ((not (thing-at-point 'url)))
+                    (bounds (bounds-of-thing-at-point 'filename)))
           (push (buffer-substring-no-properties (car bounds) (cdr bounds)) paths)))
       (dired (cons "*research paths*" (delete-dups paths))))))
 
